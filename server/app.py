@@ -16,21 +16,19 @@ def check_if_logged_in():
     if (request.endpoint) not in open_access_list and (not session.get('user_id')):
         return {'error': '401 Unauthorized'}, 401
 
+
 class Signup(Resource):
-    
     def post(self):
         request_json = request.get_json()
         username = request_json.get('username')
         password = request_json.get('password')
         image_url = request_json.get('image_url')
         bio = request_json.get('bio')
-
         user = User(
             username=username,
             image_url=image_url,
             bio=bio
         )
-
         user.password_hash = password
         try:
             db.session.add(user)
@@ -41,7 +39,6 @@ class Signup(Resource):
             return {'error': '422 Unprocessable Entity'}, 422
 
 class CheckSession(Resource):
-
     def get(self):
         user_id = session['user_id']
         if user_id:
@@ -51,7 +48,6 @@ class CheckSession(Resource):
 
 
 class Login(Resource):
-    
     def post(self):
         request_json = request.get_json()
         username = request_json.get('username')
@@ -64,25 +60,20 @@ class Login(Resource):
         return {'error': '401 Unauthorized'}, 401
 
 class Logout(Resource):
-
     def delete(self):
         session['user_id'] = None
         return {}, 204
         
 
 class RecipeIndex(Resource):
-
     def get(self):
         user = User.query.filter(User.id == session['user_id']).first()
         return [recipe.to_dict() for recipe in user.recipes], 200
-        
-        
     def post(self):
         request_json = request.get_json()
         title = request_json['title']
         instructions = request_json['instructions']
         minutes_to_complete = request_json['minutes_to_complete']
-
         try:
             recipe = Recipe(
                 title=title,
@@ -92,10 +83,8 @@ class RecipeIndex(Resource):
             )
             db.session.add(recipe)
             db.session.commit()
-
             return recipe.to_dict(), 201
         except IntegrityError:
-
             return {'error': '422 Unprocessable Entity'}, 422
 
 api.add_resource(Signup, '/signup', endpoint='signup')

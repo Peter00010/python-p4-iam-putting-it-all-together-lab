@@ -11,7 +11,6 @@ class User(db.Model, SerializerMixin):
     _password_hash = db.Column(db.String)
     image_url = db.Column(db.String)
     bio = db.Column(db.String)
-
     recipes = db.relationship('Recipe', backref='user')
 
     @hybrid_property
@@ -41,6 +40,7 @@ class Recipe(db.Model, SerializerMixin):
     title = db.Column(db.String, nullable=False)
     instructions = db.Column(db.String, nullable=False)
     minutes_to_complete = db.Column(db.Integer)
+
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
 
     def __repr__(self):
